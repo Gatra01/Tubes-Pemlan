@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- ... Bagian sebelumnya ... -->
+
+<div class="container mt-3">
+  {% if user.is_authenticated %}
+      <!-- Bagian Public Rooms -->
+      <div class="alert alert-info d-flex justify-content-between align-items-center" role="alert">
+          <h5>Available Public Rooms</h5>
+          <a href="{% url 'logout' %}">
+              <button type="button" class="btn btn-light">Click to Log Out</button>
+          </a>
+      </div>
+      {% if rooms %}
+          <div class="row equal">
+              {% for room in rooms %}
+                  <div class="col-sm-4 d-flex pb-3">
+                      <div class="card bg-light mb-3" style="max-width: 18rem;">
+                          <div class="card-block">
+                              <h3 class="card-title">{{room.name}}</h3>
+                              <p class="card-text">It is a Public group for this Project.</p>
+                              <a href="/{{room.slug}}" class="btn btn-outline-secondary">Go to Room</a>
+                          </div>
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+      {% else %}
+          <p class="text-center">No Rooms Available!</p>
+      {% endif %}
+      <hr class="mt-3 mb-3">
+      <h5>Chat with Users</h5>
+      {% if chat_users %}
+            <div class="row equal">
+                {% for chat_user in chat_users %}
+                <div class="col-sm-4 d-flex pb-3">
+                  <div class="card bg-light mb-3" style="max-width: 18rem;">
+                      <div class="card-block">
+                          <h3 class="card-title">{{ chat_user }}</h3>          
+                          <a href="{% url 'create_personal_chat' user_id=chat_user.id %}">Start Chat</a>
+                          
+                      </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+      {% else %}
+            <p class="text-center">No users available for chat.</p>
+      {% endif %}
+  {% else %}
+      <!-- Bagian ketika pengguna belum login -->
+      <div class="alert alert-info d-flex justify-content-between" role="alert">
+          <h5>You are not logged in</h5>
+          <a href="{% url 'login' %}" class="btn btn-light">Log In</a>
+      </div>
+  {% endif %}
+</div>
+
+<!-- ... Bagian setelahnya ... -->
+
+{% endif %}
+
+<br/>
+
+    
+
+
+
+
+{% endblock %}
