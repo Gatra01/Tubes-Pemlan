@@ -1,0 +1,53 @@
+<!-- chatapp/templates/personal_chat.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <div class="header">
+      <h2>{{ PersonalChatMessage.user }}</h2>
+    </div>
+    <div class="chat-log" id="chat-log">
+      {% for message in messages %}
+        <div class="{% if message.user == user %}sent{% else %}received{% endif %}">
+          <p>{{ message.content }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="input-container">
+      <input type="text" id="chat-message-input" placeholder="Type a message">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    var chatSocket = new WebSocket(
+      'ws://' + window.location.host + '/ws/personal_chat/{{ other_user.username }}/'
+    );
+
+    chatSocket.onmessage = function (e) {
+      var data = JSON.parse(e.data);
+      var message = data['message'];
+      var chatLog = document.getElementById('chat-log');
+      var newMessage = document.createElement('div');
+      newMessage.className = 'received';
+      newMessage.innerHTML = '<p>' + message + '</p>';
+      chatLog.appendChild(newMessage);
+    };
+
+    function sendMessage() {
+      var messageInputDom = document.getElementById('chat-message-input');
+      var message = messageInputDom.value;
+
+      if (message.trim() !== '') {
+        var chatLog = document.getElementById('chat-log');
+        var newMessage = document.createElement('div');
+        newMessage.className = 'sent';
+        newMessage.innerHTML = '<p>' + message + '</p>';
+        chatLog.appendChild(newMessage);
+
+        chatSocket.send(JSON.stringify({ 'message': message }));
+        messageInputDom.value = '';
+      }
+    }
+  </script>
+{% endblock %}
